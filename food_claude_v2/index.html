@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 看你今天該吃什麼</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+    <div id="p5-container" class="fixed top-0 left-0 w-full h-full z-0 pointer-events-none"></div>
+    
+    <!-- 主题切换按钮 -->
+    <button id="theme-toggle" class="fixed top-4 right-4 z-50 p-2 rounded-full bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-md hover:shadow-lg transition-all">
+        <i class="fa-solid fa-sun text-yellow-500 dark:hidden"></i>
+        <i class="fa-solid fa-moon text-blue-300 hidden dark:block"></i>
+    </button>
+    
+    <main class="container mx-auto px-4 py-6 relative z-10">
+        <!-- 頂部標題區域 -->
+        <div class="text-center mb-8 mt-4">
+            <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 mb-4">你的臉告訴我…你餓了</h1>
+            <p class="text-lg md:text-xl text-gray-600 dark:text-gray-400">上傳自拍，AI 透過表情判斷你現在的情緒、天氣資訊、時間，再推薦你「命中註定」的一道餐點</p>
+        </div>
+
+        <!-- 選擇模式 -->
+        <div class="max-w-2xl mx-auto mb-6">
+            <div class="flex justify-center space-x-4">
+                <button id="selfie-mode-btn" class="px-4 py-2 bg-purple-500 dark:bg-purple-600 text-white rounded-lg hover:bg-purple-600 dark:hover:bg-purple-700 transition-colors">
+                    上傳自拍模式
+                </button>
+                <button id="manual-mode-btn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    手動選擇模式
+                </button>
+            </div>
+        </div>
+
+        <!-- 上傳照片區域 -->
+        <div id="selfie-mode" class="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-8 transition-all hover:shadow-xl">
+            <div class="p-6">
+                <div id="upload-area" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-10 text-center cursor-pointer hover:border-purple-500 dark:hover:border-purple-400 transition-colors">
+                    <i class="fa-solid fa-camera text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">拖放或點擊上傳自拍</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">讓 AI 看看你的表情，找到你命中註定的美食</p>
+                    <input type="file" id="photo-upload" class="hidden" accept="image/*">
+                </div>
+            </div>
+        </div>
+
+        <!-- 手動選擇模式 -->
+        <div id="manual-mode" class="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-8 transition-all hover:shadow-xl hidden">
+            <div class="p-6">
+                <h3 class="text-xl font-semibold mb-4 text-center">手動選擇你的情緒和天氣</h3>
+                
+                <!-- 情緒選擇 -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 dark:text-gray-300 mb-2">你現在的心情是？</label>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3" id="mood-selector">
+                        <!-- 情緒選項將由JS動態填充 -->
+                    </div>
+                </div>
+                
+                <!-- 天氣選擇 -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 dark:text-gray-300 mb-2">今天的天氣？</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="weather-selector">
+                        <!-- 天氣選項將由JS動態填充 -->
+                    </div>
+                </div>
+                
+                <!-- 推薦按鈕 -->
+                <div class="text-center mt-6">
+                    <button id="generate-recommendation" class="px-6 py-3 bg-purple-500 dark:bg-purple-600 text-white rounded-lg hover:bg-purple-600 dark:hover:bg-purple-700 transition-colors text-lg">
+                        看看我該吃什麼 <i class="fa-solid fa-utensils ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分析中狀態 -->
+        <div id="analyzing" class="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 mb-8 hidden">
+            <div class="flex flex-col items-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mb-4"></div>
+                <h3 class="text-xl font-semibold mb-4">AI 正在分析你的表情...</h3>
+                <div class="w-full max-w-md bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
+                    <div id="progress-bar" class="bg-purple-500 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+                <p id="analysis-status" class="text-gray-500 dark:text-gray-400">掃描表情中...</p>
+            </div>
+        </div>
+
+        <!-- 結果區域 -->
+        <div id="result" class="max-w-3xl mx-auto mb-10 hidden">
+            <!-- AI推薦解釋區 -->
+            <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-6 p-5">
+                <h3 class="text-xl font-semibold mb-3 flex items-center">
+                    <i class="fa-solid fa-brain text-purple-500 mr-2"></i> 
+                    🧠 AI是怎麼推薦的？
+                </h3>
+                <div id="ai-explanation" class="text-gray-700 dark:text-gray-300 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <!-- 將由JS填充 -->
+                </div>
+            </div>
+
+            <!-- 推薦結果卡 -->
+            <div class="mb-4 text-center">
+                <h3 class="text-xl font-semibold flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-utensils text-purple-500 mr-2"></i>
+                    🍴 推薦結果
+                </h3>
+            </div>
+
+            <div class="receipt-container bg-amber-700 rounded-lg shadow-lg overflow-hidden mx-auto max-w-md">
+                <div class="receipt-header p-3">
+                    <div class="receipt-paper bg-white dark:bg-gray-200 rounded-t-lg p-4">
+                        <h2 id="english-dish-name" class="text-center text-xl font-bold text-gray-800"></h2>
+                        <div class="border-b border-dashed border-gray-400 my-2"></div>
+                    </div>
+                </div>
+                
+                <div class="receipt-body bg-white dark:bg-gray-200 p-5 text-gray-800">
+                    <!-- 食物圖片 -->
+                    <div class="food-main-container mb-5">
+                        <div class="flex items-center justify-center">
+                            <img id="food-image" class="w-full h-48 object-cover rounded-lg" src="" alt="推薦餐點">
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-dashed border-gray-400 my-3"></div>
+                    
+                    <!-- 中文菜名顯示 -->
+                    <div class="text-center my-4">
+                        <h3 id="chinese-dish-name" class="font-bold text-xl"></h3>
+                        <p id="chinese-country" class="text-base text-gray-600 dark:text-gray-500 mt-1"></p>
+                    </div>
+                    
+                    <div class="border-b border-dashed border-gray-400 my-3"></div>
+                    
+                    <!-- 收據底部 -->
+                    <div class="receipt-footer">
+                        <p id="dish-quote" class="text-center text-base text-gray-700 dark:text-gray-600 mt-3 px-2"></p>
+                        <p class="text-center text-sm font-bold mt-3">感謝光臨! 祝您有美好的一天!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 按鈕操作 -->
+            <div class="flex justify-center space-x-6 mt-6">
+                <button id="share-btn" class="px-5 py-2.5 bg-purple-500 dark:bg-purple-600 text-white rounded-lg hover:bg-purple-600 dark:hover:bg-purple-700 transition-colors text-lg">
+                    分享結果
+                </button>
+                <button id="try-again-btn" class="px-5 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-lg">
+                    再試一次
+                </button>
+            </div>
+        </div>
+
+        <!-- 底部資訊區域 -->
+        <footer class="text-center text-gray-500 dark:text-gray-400 py-4 mt-4">
+            <p>作者：yuchen</p>
+            <p class="mt-1">© 2025 AI 看你今天該吃什麼. 保留所有權利。</p>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

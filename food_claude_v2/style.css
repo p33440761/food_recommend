@@ -1,0 +1,395 @@
+/* 基礎樣式 */
+:root {
+  --primary-color: #8B5CF6;
+  --primary-hover: #7C3AED;
+  --background-light: #F9FAFB;
+  --background-dark: #111827;
+  --text-light: #1F2937;
+  --text-dark: #F3F4F6;
+  --card-light: #FFFFFF;
+  --card-dark: #1E293B;
+  --border-light: #E5E7EB;
+  --border-dark: #374151;
+  --receipt-bg: #B45309;
+  --receipt-paper: #FFFFFF;
+  --receipt-text: #1F2937;
+}
+
+html, body {
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+}
+
+main {
+  min-height: 100vh;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 平滑過渡效果 */
+* {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* 主題切換按鈕效果 */
+#theme-toggle {
+  transition: all 0.3s ease;
+  transform: scale(1);
+}
+
+#theme-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}
+
+#theme-toggle i {
+  transition: transform 0.5s ease;
+}
+
+#theme-toggle:hover i {
+  transform: rotate(30deg);
+}
+
+/* 收據樣式 */
+.receipt-container {
+  position: relative;
+  max-width: 380px;
+  width: 100%;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+#result.show .receipt-container {
+  transform: translateY(0);
+  opacity: 1;
+  animation: receiptAppear 0.8s ease-out forwards;
+}
+
+@keyframes receiptAppear {
+  0% {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(-5px) scale(1.02);
+  }
+  40% {
+    transform: translateY(0) scale(0.99);
+  }
+  60% {
+    transform: translateY(-2px) scale(1.01);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.receipt-header {
+  background-color: var(--receipt-bg);
+  padding-bottom: 0;
+  border-radius: 8px 8px 0 0;
+}
+
+.receipt-paper {
+  background-color: var(--receipt-paper);
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.receipt-body {
+  position: relative;
+  background-color: var(--receipt-paper);
+  color: var(--receipt-text);
+  font-size: 0.9rem;
+  overflow-y: visible;
+}
+
+.border-dashed {
+  border-style: dashed;
+  border-width: 1px;
+}
+
+.receipt-items {
+  padding: 8px 0;
+}
+
+.barcode {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+/* 收據底部效果 */
+.receipt-container:after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background-color: var(--receipt-bg);
+  border-radius: 0 0 8px 8px;
+}
+
+/* P5.js 容器樣式 */
+#p5-container {
+  opacity: 0.5;
+}
+
+/* 上傳區域互動效果 */
+#upload-area {
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+#upload-area:hover {
+  transform: translateY(-2px);
+}
+
+#upload-area.dragover {
+  background-color: rgba(139, 92, 246, 0.1);
+  border-color: var(--primary-color);
+}
+
+/* 結果區域調整 */
+#result {
+  margin-bottom: 2rem;
+}
+
+/* 底部資訊區域 */
+footer {
+  padding: 1rem 0;
+  margin-top: 1rem;
+}
+
+/* 按鈕懸停效果 */
+button {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* 結果卡片效果 */
+#result {
+  transition: all 0.5s ease;
+}
+
+#result.show {
+  opacity: 1;
+}
+
+/* 分析中動畫效果 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+#analyzing p {
+  animation: pulse 1.5s infinite;
+}
+
+/* 食物圖片效果 */
+#food-image {
+  transition: transform 0.3s ease;
+}
+
+#food-image:hover {
+  transform: scale(1.03);
+}
+
+/* 分享按鈕效果 */
+#share-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+#share-btn:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, .5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 1;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+#share-btn:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+/* 進度條動畫 */
+@keyframes progressAnimation {
+  0% { width: 5%; }
+  100% { width: 100%; }
+}
+
+#progress-bar.animate {
+  animation: progressAnimation 4s ease-in-out forwards;
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+  .receipt-container {
+    max-width: 320px;
+  }
+}
+
+/* 淡入動畫 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main > div {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+main > div:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+main > div:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+/* 更新標題和描述大小 */
+.text-4xl.md\:text-5xl {
+  font-size: 2.5rem;
+}
+
+.text-lg.md\:text-xl {
+  font-size: 1.125rem;
+}
+
+/* 頂部標題區域 */
+.text-center.mb-8.mt-4 {
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+}
+
+/* 手動選擇模式樣式 */
+#mood-selector > div,
+#weather-selector > div {
+  transition: all 0.2s ease;
+}
+
+#mood-selector > div:hover,
+#weather-selector > div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+#mood-selector > div.border-purple-500,
+#weather-selector > div.border-purple-500 {
+  border-width: 2px;
+  box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.3);
+}
+
+/* AI解釋區域樣式 */
+#ai-explanation {
+  transition: all 0.3s ease;
+}
+
+#ai-explanation:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+#ai-explanation .font-semibold {
+  color: var(--primary-color);
+}
+
+/* 結果區域動畫效果 */
+#result > div {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease;
+}
+
+#result.show > div:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+#result.show > div:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+#result.show > div:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+
+#result.show > div:nth-child(4) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}
+
+/* 模式切換按鈕 */
+#selfie-mode-btn,
+#manual-mode-btn {
+  transition: all 0.3s ease;
+}
+
+#selfie-mode-btn:hover,
+#manual-mode-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* 按鈕動畫效果 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
